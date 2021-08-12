@@ -10,7 +10,8 @@ class LEDPanel
 	public:
 		LEDPanel(short row, short number);
 		CRGB* GetLED(short x, short y);
-		bool FadeToColor(short target_r, short target_g, short target_b, double duration);
+		bool FadeToColor(short target_r, short target_g, short target_b, double duration, short buffer0);
+		short status_buffer[50]; // This is bad, but a way to store context between frames.  Come up with something better.
 	private:
 		short num_strips;
 		short *strip_lengths; // This will be an array num_strips long, with the number of LEDs in each strip in the panel

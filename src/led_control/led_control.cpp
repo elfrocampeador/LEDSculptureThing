@@ -80,6 +80,10 @@ LEDPanel::LEDPanel(short row, short number)
 			FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[4], strip_lengths[4]);
 			FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[5], strip_lengths[5]);*/
 	}
+	for(int k = 0; k < 50; k++)
+	{
+		status_buffer[k] = 0;
+	}
 }
 
 // Return a reference to the cell in the main leds 2D array indicated by x and y
@@ -98,10 +102,12 @@ CRGB* LEDPanel::GetLED(short x, short y)
 // Fade from whatever the current color of each pixel in the whole panel to the target r, g, back
 // Do so in approximately duration seconds.  Assumes system framerate of ~60fps (delay of 16ms between frames.  This is actually about 62fps)
 // Return true when ALL current r g b values = target r g b values
-bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, double duration)
+bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, double duration, short buffer0)
 {
 	short x, y;
 	bool done = true; // if ANY led is encountered that isn't at the target rgb, this will be set to false
+	//Serial.println((String)"TARGET" + target_r + "   " + target_g + "    " + target_b);
+	//Serial.println((String)"ORIGIN" + status_buffer[buffer0] + "   " + status_buffer[buffer0+1] + "    " + status_buffer[buffer0+2]);
 	
 	for(x = 0; x < num_strips; x++)
 	{
@@ -111,35 +117,52 @@ bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, doubl
 			
 			if(current_led != NULL)
 			{
-				/*int r_dist = current_led->r - target_r;
-				int g_dist = current_led->g - target_g;
-				int b_dist = current_led->b - target_b;
-				int r_step = ceil(((double)current_led->r - (double)target_r) / 60.0);
-				int g_step = ceil(((double)current_led->g - (double)target_g) / 60.0);
-				int b_step = ceil(((double)current_led->b - (double)target_b) / 60.0);
-									
-				// These conditions will prevent overshooting the target
-				if(abs8(r_step) >= abs(r_dist))
-					r_step = r_dist;
-				if(abs8(g_step) >= abs(g_dist))
-					g_step = g_dist;
-				if(abs8(b_step) >= abs(b_dist))
-					b_step = b_dist;
-					*/
+				short r_origin = status_buffer[buffer0];
+				short g_origin = status_buffer[buffer0+1];
+				short b_origin = status_buffer[buffer0+2];
 				
-				short r_step = -1;
-				short g_step = 0;
-				short b_step = 0;
-			
-				Serial.println("HI");
-				if(leds[0][5].r == 50)
-					return true;
+				short r_dist = r_origin - target_r;
+				short g_dist = g_origin - target_g;
+				short b_dist = b_origin - target_b;
+				
+				//Serial.println((String)"Before r" + r_dist + "   " + target_r);
+				//Serial.println((String)"Before g" + g_dist + "   " + target_g);
+				//Serial.println((String)"Before b" + b_dist + "   " + target_b);
+				
+				short r_step = ceil((double)r_dist / 60.0);
+				short g_step = ceil((double)g_dist / 60.0);
+				short b_step = ceil((double)b_dist / 60.0);
+				
+				//Serial.println((String)"RSTEP" + r_step + "  GSTEP" + g_step + "  BSTEP" + b_step);
+				
+				// These conditions will prevent overshooting the target
+				if((short)current_led->r - r_step > 255 || (short)current_led->r - r_step < 0)
+				{
+					r_step = current_led->r - target_r;
+					//Serial.println(r_step);
+				}
+				if((short)current_led->g - g_step > 255 || (short)current_led->g - g_step < 0)
+				{
+					g_step = current_led->g - target_g;
+				}
+				if((short)current_led->b - b_step > 255 || (short)current_led->b - b_step < 0)
+				{
+					b_step = current_led->b - target_b;
+					//Serial.println(b_step);
+				}
 			
 				if(r_step != 0 || g_step != 0 || b_step != 0) // This LED isn't done fading
 				{
+					//Serial.println((String)"RED" + current_led->r + "  GREEN" + current_led->g + "  BLUE" + current_led->b);
+					//Serial.println((String)"RSTEP" + r_step + "  GSTEP" + g_step + "  BSTEP" + b_step);
+
 					done = false;
 					//(*current_led) = CRGB(qsub8(current_led->r, r_step), qsub8(current_led->g, g_step), qsub8(current_led->b, b_step));
 					(*current_led) = CRGB(current_led->r - r_step, current_led->g - g_step, current_led->b - b_step);
+				}
+				if(current_led->r == 255 && current_led->b == 255)
+				{
+					done = true;
 				}
 			}
 		}

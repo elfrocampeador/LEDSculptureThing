@@ -30,21 +30,32 @@ void loop()
 	bool done;
 	if(target == 1)
 	{
-		done = test_panel.FadeToColor(255, 0, 0, 4.0);
+		done = test_panel.FadeToColor(255, 0, 0, 4.0, 0);
 	}
 	else
 	{
-		done = test_panel.FadeToColor(0, 0, 255, 4.0);
+		done = test_panel.FadeToColor(0, 0, 255, 4.0, 0);
 	}
 	
 	if(done)
 	{
 		if(target == 1)
+		{
 			target = 2;
+			test_panel.status_buffer[0] = 255;
+			test_panel.status_buffer[1] = 0;
+			test_panel.status_buffer[2] = 0;
+		}
 		else
+		{
 			target = 1;
+			test_panel.status_buffer[0] = 0;
+			test_panel.status_buffer[1] = 0;
+			test_panel.status_buffer[2] = 255;
+		}
 	}
 
+	Serial.println("show");
 	FastLED.show();
-	delay(17);
+	delay(1000/60);
 }
