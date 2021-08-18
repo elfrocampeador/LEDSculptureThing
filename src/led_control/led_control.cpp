@@ -82,7 +82,7 @@ LEDPanel::LEDPanel(short row, short number)
 	}
 	for(int k = 0; k < 50; k++)
 	{
-		status_buffer[k] = 0;
+		status_buffer[k] = -1;
 	}
 }
 
@@ -99,6 +99,21 @@ CRGB* LEDPanel::GetLED(short x, short y)
 	return &leds[x][true_y];
 }
 
+// Does what it says on the tin, really.
+void LEDPanel::SetColor(short target_r, short target_g, short target_b)
+{
+	short x, y;
+	
+	for(x = 0; x < num_strips; x++)
+	{
+		for(y = 0; y < longest_strip_length; y++)
+		{
+			CRGB *current_led = GetLED(x, y);
+			
+			(*current_led) = CRGB(target_r, target_g, target_b);
+		}
+	}
+}
 // Fade from whatever the current color of each pixel in the whole panel to the target r, g, back
 // Do so in approximately duration seconds.  Assumes system framerate of ~60fps (delay of 16ms between frames.  This is actually about 62fps)
 // Return true when ALL current r g b values = target r g b values
@@ -106,9 +121,17 @@ bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, doubl
 {
 	short x, y;
 	bool done = true; // if ANY led is encountered that isn't at the target rgb, this will be set to false
-	//Serial.println((String)"TARGET" + target_r + "   " + target_g + "    " + target_b);
-	//Serial.println((String)"ORIGIN" + status_buffer[buffer0] + "   " + status_buffer[buffer0+1] + "    " + status_buffer[buffer0+2]);
-	
+
+	// Initialization, if we're just getting started
+	if(status_buffer[buffer0] == -1)
+	{
+		CRGB *current_led = GetLED(0, 0);
+		
+		status_buffer[buffer0] = current_led->r;
+		status_buffer[buffer0+1] = current_led->g;
+		status_buffer[buffer0+2] = current_led->b;
+	}
+
 	for(x = 0; x < num_strips; x++)
 	{
 		for(y = 0; y < longest_strip_length; y++)
@@ -124,22 +147,16 @@ bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, doubl
 				short r_dist = r_origin - target_r;
 				short g_dist = g_origin - target_g;
 				short b_dist = b_origin - target_b;
+								
+				short r_step = ceil((double)r_dist / (60.0 * duration));
+				short g_step = ceil((double)g_dist / (60.0 * duration));
+				short b_step = ceil((double)b_dist / (60.0 * duration));
 				
-				//Serial.println((String)"Before r" + r_dist + "   " + target_r);
-				//Serial.println((String)"Before g" + g_dist + "   " + target_g);
-				//Serial.println((String)"Before b" + b_dist + "   " + target_b);
-				
-				short r_step = ceil((double)r_dist / 60.0);
-				short g_step = ceil((double)g_dist / 60.0);
-				short b_step = ceil((double)b_dist / 60.0);
-				
-				//Serial.println((String)"RSTEP" + r_step + "  GSTEP" + g_step + "  BSTEP" + b_step);
-				
+
 				// These conditions will prevent overshooting the target
 				if((short)current_led->r - r_step > 255 || (short)current_led->r - r_step < 0)
 				{
 					r_step = current_led->r - target_r;
-					//Serial.println(r_step);
 				}
 				if((short)current_led->g - g_step > 255 || (short)current_led->g - g_step < 0)
 				{
@@ -148,16 +165,11 @@ bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, doubl
 				if((short)current_led->b - b_step > 255 || (short)current_led->b - b_step < 0)
 				{
 					b_step = current_led->b - target_b;
-					//Serial.println(b_step);
 				}
 			
 				if(r_step != 0 || g_step != 0 || b_step != 0) // This LED isn't done fading
 				{
-					//Serial.println((String)"RED" + current_led->r + "  GREEN" + current_led->g + "  BLUE" + current_led->b);
-					//Serial.println((String)"RSTEP" + r_step + "  GSTEP" + g_step + "  BSTEP" + b_step);
-
 					done = false;
-					//(*current_led) = CRGB(qsub8(current_led->r, r_step), qsub8(current_led->g, g_step), qsub8(current_led->b, b_step));
 					(*current_led) = CRGB(current_led->r - r_step, current_led->g - g_step, current_led->b - b_step);
 				}
 				if(current_led->r == 255 && current_led->b == 255)
@@ -167,6 +179,71 @@ bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, doubl
 			}
 		}
 	}
+	
+	if(done)
+	{
+		// Reset the buffers
+		status_buffer[buffer0] = -1;
+		status_buffer[buffer0+1] = -1;
+		status_buffer[buffer0+2] = -1;
+	}
+	return done;
+}
+
+bool LEDPanel::WipeVertical(short target_r, short target_g, short target_b, bool go_up, double duration, short buffer0)
+{
+	short x, y, y_step, frame_offset;
+	bool done = true; // if ANY led is encountered that isn't at the target rgb, this will be set to false
+	
+	y_step = ceil(longest_strip_length / (60.0 * duration));
+	if(status_buffer[buffer0] == -1) // If we just got started
+	{
+		status_buffer[buffer0] = 0;
+	}
+	
+	// Initialize
+	if(go_up)
+	{
+		y = longest_strip_length - status_buffer[buffer0];
+	}
+	else
+	{
+		y = status_buffer[buffer0];
+	}
+	frame_offset = 0;
+	
+	
+	for(frame_offset = 0; frame_offset < y_step; frame_offset++)
+	{
+		for(x = 0; x < num_strips; x++)
+		{
+			CRGB *current_led = GetLED(x, y);
+			(*current_led) = CRGB(target_r, target_g, target_b);
+		}
+	
+		status_buffer[buffer0] += 1;
+		if(go_up)
+		{
+			y = longest_strip_length - status_buffer[buffer0];
+		}
+		else
+		{
+			y = status_buffer[buffer0];
+		}
+	}
+	
+	// If we're not done yet
+	if((go_up && y > 0) || (!go_up  && y < longest_strip_length))
+	{
+		done = false;
+	}
+	else // If we are, in fact, done
+	{
+		// Reset the buffer
+		status_buffer[buffer0] = -1;
+	}
+	
+	Serial.println((String)" " + y_step + "   " + status_buffer[buffer0] + "   " + y);
 
 	return done;
 }

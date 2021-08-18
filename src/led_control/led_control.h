@@ -10,7 +10,14 @@ class LEDPanel
 	public:
 		LEDPanel(short row, short number);
 		CRGB* GetLED(short x, short y);
+		void SetColor(short target_r, short target_g, short target_b);
+		
+		// The following uses one index of buffer space
+		bool WipeVertical(short target_r, short target_g, short target_b, bool go_up, double duration, short buffer0);
+		
+		// The following use three indices of buffer space
 		bool FadeToColor(short target_r, short target_g, short target_b, double duration, short buffer0);
+		
 		short status_buffer[50]; // This is bad, but a way to store context between frames.  Come up with something better.
 	private:
 		short num_strips;
