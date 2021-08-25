@@ -12,6 +12,9 @@ class LEDPanel
 		CRGB* GetLED(short x, short y);
 		void SetColor(short target_r, short target_g, short target_b);
 		
+		// The following uses no buffer space
+		void StaticVerticalGradient(short start_r, short start_g, short start_b, short target_y, short target_g, short target_b);
+		
 		// The following uses one index of buffer space
 		bool WipeVertical(short target_r, short target_g, short target_b, bool go_up, double duration, short buffer0);
 		

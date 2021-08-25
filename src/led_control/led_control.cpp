@@ -114,6 +114,34 @@ void LEDPanel::SetColor(short target_r, short target_g, short target_b)
 		}
 	}
 }
+
+void LEDPanel::StaticVerticalGradient(short start_r, short start_g, short start_b, short target_r, short target_g, short target_b)
+{
+	short step_r = ceil((((double)start_r - (double)target_r)) / (longest_strip_length / 2));
+	short step_g = ceil((((double)start_g - (double)target_g)) / (longest_strip_length / 2));
+	short step_b = ceil((((double)start_b - (double)target_b)) / (longest_strip_length / 2));
+	
+	short x, y;
+	short half_length = longest_strip_length / 2;
+	for(x = 0; x < num_strips; x++)
+	{
+		for(y = 0; y < longest_strip_length; y++)
+		{
+			short dist_from_center = abs(y - half_length);
+			
+			CRGB *current_led = GetLED(x, y);
+			
+			short new_r = start_r - (dist_from_center * step_r);
+			short new_g = start_g - (dist_from_center * step_g);
+			short new_b = start_b - (dist_from_center * step_b);
+			
+			Serial.println((String)" R " + new_r + "  G " + new_g + "  B " + new_b);
+			
+			(*current_led) = CRGB(new_r, new_g, new_b);
+		}
+	}
+}
+
 // Fade from whatever the current color of each pixel in the whole panel to the target r, g, back
 // Do so in approximately duration seconds.  Assumes system framerate of ~60fps (delay of 16ms between frames.  This is actually about 62fps)
 // Return true when ALL current r g b values = target r g b values
@@ -233,7 +261,7 @@ bool LEDPanel::WipeVertical(short target_r, short target_g, short target_b, bool
 	}
 	
 	// If we're not done yet
-	if((go_up && y > 0) || (!go_up  && y < longest_strip_length))
+	if((go_up && y >= 0) || (!go_up  && y < longest_strip_length))
 	{
 		done = false;
 	}

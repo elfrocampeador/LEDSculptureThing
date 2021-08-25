@@ -38,14 +38,17 @@ void loop()
 	if(target == 1)
 	{
 		done = test_panel.WipeVertical(255, 0, 0, 1, 4.0, 0);
+		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
 	}
 	else if(target == 2)
 	{
 		done = test_panel.WipeVertical(0, 255, 0, 0, 4.0, 0);
+		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
 	}
 	else
 	{
 		done = test_panel.WipeVertical(255, 255, 255, 1, 4.0, 0);
+		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
 	}
 	
 	if(done)
