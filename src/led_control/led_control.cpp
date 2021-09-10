@@ -24,18 +24,24 @@ LEDPanel::LEDPanel(short row, short number)
 		case 13: // Upper row, third panel
 		case 14: // Upper row, fourth panel
 		case 15: // Upper row, fifth panel
-			num_strips = 2; // set panel strip count to 6
+			num_strips = 6; // set panel strip count to 6
 			strip_lengths = (short*)malloc(sizeof(short) * num_strips);
-			strip_lengths[0] = 60;
-			strip_lengths[1] = 30;
+			strip_lengths[0] = 20;
+			strip_lengths[1] = 37;
+			strip_lengths[2] = 55;
+			strip_lengths[3] = 55;
+			strip_lengths[4] = 37;
+			strip_lengths[5] = 20;
 			
-			longest_strip_length = 60;
+			longest_strip_length = 55;
 			
 			strip_start_addresses = (short*)malloc(sizeof(short) * num_strips);
-			strip_start_addresses[0] = 0;
-			strip_start_addresses[1] = 0;
-			
-			//leds = (CRGB*)malloc(sizeof(CRGB) * num_strips * longest_strip_length);
+			strip_start_addresses[0] = 6;
+			strip_start_addresses[1] = 3;
+			strip_start_addresses[2] = 0;
+			strip_start_addresses[3] = 0;
+			strip_start_addresses[4] = 3;
+			strip_start_addresses[5] = 6;
 			
 			int i, j;
 			leds = (CRGB**)malloc(sizeof(CRGB*) * num_strips);
@@ -51,10 +57,10 @@ LEDPanel::LEDPanel(short row, short number)
 			// There needs to be a line here for each strip in the panel
 			FastLED.addLeds<WS2812, 3, GRB>(leds[0], strip_lengths[0]);
 			FastLED.addLeds<WS2812, 4, GRB>(leds[1], strip_lengths[1]);
-			//FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[2], strip_lengths[2]);
-			//FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[3], strip_lengths[3]);
-			//FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[4], strip_lengths[4]);
-			//FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[5], strip_lengths[5]);
+			FastLED.addLeds<WS2812, 5, GRB>(leds[2], strip_lengths[2]);
+			FastLED.addLeds<WS2812, 6, GRB>(leds[3], strip_lengths[3]);
+			FastLED.addLeds<WS2812, 7, GRB>(leds[4], strip_lengths[4]);
+			FastLED.addLeds<WS2812, 8, GRB>(leds[5], strip_lengths[5]);
 		/*case 21: // Lower row, first panel
 		case 22: // Lower row, second panel
 		case 23: // Lower row, third panel
@@ -135,7 +141,7 @@ void LEDPanel::StaticVerticalGradient(short start_r, short start_g, short start_
 			short new_g = start_g - (dist_from_center * step_g);
 			short new_b = start_b - (dist_from_center * step_b);
 			
-			Serial.println((String)" R " + new_r + "  G " + new_g + "  B " + new_b);
+			//Serial.println((String)" R " + new_r + "  G " + new_g + "  B " + new_b);
 			
 			(*current_led) = CRGB(new_r, new_g, new_b);
 		}
@@ -176,10 +182,10 @@ bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, doubl
 				short g_dist = g_origin - target_g;
 				short b_dist = b_origin - target_b;
 								
-				short r_step = ceil((double)r_dist / (60.0 * duration));
-				short g_step = ceil((double)g_dist / (60.0 * duration));
-				short b_step = ceil((double)b_dist / (60.0 * duration));
-				
+				short r_step = ceil((double)r_dist / (30.0 * duration));
+				short g_step = ceil((double)g_dist / (30.0 * duration));
+				short b_step = ceil((double)b_dist / (30.0 * duration));
+				//Serial.println((String)" " + r_step + "   " + g_step + "   " + b_step);
 
 				// These conditions will prevent overshooting the target
 				if((short)current_led->r - r_step > 255 || (short)current_led->r - r_step < 0)
@@ -194,15 +200,12 @@ bool LEDPanel::FadeToColor(short target_r, short target_g, short target_b, doubl
 				{
 					b_step = current_led->b - target_b;
 				}
+				//Serial.println((String)" " + r_step + "   " + g_step + "   " + b_step);
 			
 				if(r_step != 0 || g_step != 0 || b_step != 0) // This LED isn't done fading
 				{
 					done = false;
 					(*current_led) = CRGB(current_led->r - r_step, current_led->g - g_step, current_led->b - b_step);
-				}
-				if(current_led->r == 255 && current_led->b == 255)
-				{
-					done = true;
 				}
 			}
 		}
@@ -223,7 +226,7 @@ bool LEDPanel::WipeVertical(short target_r, short target_g, short target_b, bool
 	short x, y, y_step, frame_offset;
 	bool done = true; // if ANY led is encountered that isn't at the target rgb, this will be set to false
 	
-	y_step = ceil(longest_strip_length / (60.0 * duration));
+	y_step = ceil((double)longest_strip_length / (30.0 * duration));
 	if(status_buffer[buffer0] == -1) // If we just got started
 	{
 		status_buffer[buffer0] = 0;
@@ -271,7 +274,7 @@ bool LEDPanel::WipeVertical(short target_r, short target_g, short target_b, bool
 		status_buffer[buffer0] = -1;
 	}
 	
-	Serial.println((String)" " + y_step + "   " + status_buffer[buffer0] + "   " + y);
+	//Serial.println((String)" " + y_step + "   " + status_buffer[buffer0] + "   " + y);
 
 	return done;
 }

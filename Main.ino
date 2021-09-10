@@ -1,14 +1,7 @@
 #include <FastLED.h>
 #include "src/led_control/led_control.h"
 
-// How many leds per strip (With our real shapes these will not be equal, see comments in setup below
-#define NUM_LEDS 60
-#define NUM_STRIPS 2
-
 // Define the array of leds
-const int strip_data_pins [] = {3, 6}; // Chose some random pins here.
-CRGB leds[NUM_STRIPS][NUM_LEDS];
-
 LEDPanel test_panel = LEDPanel(1, 5);
 int target = 1;
 
@@ -37,18 +30,33 @@ void loop()
 	
 	if(target == 1)
 	{
-		done = test_panel.WipeVertical(255, 0, 0, 1, 4.0, 0);
+		CRGB color = CRGB::Red;
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 8.0, 0);
 		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
 	}
 	else if(target == 2)
 	{
-		done = test_panel.WipeVertical(0, 255, 0, 0, 4.0, 0);
-		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
+		CRGB color = CRGB::OrangeRed;
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 0, 8.0, 0);		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
+	}
+	else if(target == 3)
+	{
+		CRGB color = CRGB::Yellow;
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 8.0, 0);
+	}
+	else if(target == 4)
+	{
+		CRGB color = CRGB::Green;
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 0, 8.0, 0);	}
+	else if(target == 5)
+	{
+		CRGB color = CRGB::Blue;
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 8.0, 0);
 	}
 	else
 	{
-		done = test_panel.WipeVertical(255, 255, 255, 1, 4.0, 0);
-		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
+		CRGB color = CRGB::Purple;
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 0, 8.0, 0);
 	}
 	
 	if(done)
@@ -59,10 +67,16 @@ void loop()
 		else if(target == 2)
 			target = 3;
 		else if(target == 3)
+			target = 4;
+		else if(target == 4)
+			target = 5;
+		else if(target == 5)
+			target = 6;
+		else if(target == 6)
 			target = 1;
 	}
 
 	Serial.println("show");
 	FastLED.show();
-	delay(1000/60);
+	delay(1000/30);
 }
