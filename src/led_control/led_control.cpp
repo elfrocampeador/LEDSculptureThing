@@ -1,5 +1,12 @@
 #include "led_control.h"
 
+// Each panel is intended to be wired as a zig-zagging snake of strips oriented up and down
+// With the data pin being fed from the bottom left of the panel, and then from the top of 
+// Each odd numbered column to the top of the next even numbered column, and the bottom of
+// Each even numbered colum to the bottom of the next odd numbered colum.
+// Each panel, thus, requires only a single data pin on the arduino
+
+
 // Unfortunately, the way FastLED is set up makes this quite awkward.
 // We can't specify pin numbers by variable, so we're going to have to make this constructor super ugly
 // Seriously, this mess is going to use up kilobytes of our really limited RAM
@@ -32,10 +39,14 @@ LEDPanel::LEDPanel(short row, short number)
 			strip_lengths[3] = 55;
 			strip_lengths[4] = 37;
 			strip_lengths[5] = 20;
-			
+				
 			longest_strip_length = 55;
 			
-			strip_start_addresses = (short*)malloc(sizeof(short) * num_strips);
+			// Each column (sub strip) may be of a different length (as described in strip_lengths)
+			// And, thus, to establish a coherent grid, we need to know where each strip starts relative to the others.
+			// Specifically, this is how far each strip starts *from the bottom*
+			// Offset of 0 is for the longest column(s) as those take up the entire vertical height of the coordinate grid
+			strip_start_addresses = (short*)malloc(sizeof(short) * num_strips); 
 			strip_start_addresses[0] = 6;
 			strip_start_addresses[1] = 3;
 			strip_start_addresses[2] = 0;
@@ -43,24 +54,22 @@ LEDPanel::LEDPanel(short row, short number)
 			strip_start_addresses[4] = 3;
 			strip_start_addresses[5] = 6;
 			
-			int i, j;
-			leds = (CRGB**)malloc(sizeof(CRGB*) * num_strips);
+			int num_leds = 0;
+			int i;
 			for(i = 0; i < num_strips; i++)
 			{
-				leds[i] = (CRGB*)malloc(sizeof(CRGB) * longest_strip_length);
-				for(j = 0; j < longest_strip_length; j++)
-				{
-					leds[i][j] = CRGB(0, 0, 0);
-				}
+				num_leds += strip_lengths[i];
+			}			
+
+			leds = (CRGB*)malloc(sizeof(CRGB*) * num_leds);
+			
+			for(i = 0; i < num_leds; i++)
+			{
+				leds[i] = CRGB(0, 0, 0);
 			}
 			
 			// There needs to be a line here for each strip in the panel
-			FastLED.addLeds<WS2812, 3, GRB>(leds[0], strip_lengths[0]);
-			FastLED.addLeds<WS2812, 4, GRB>(leds[1], strip_lengths[1]);
-			FastLED.addLeds<WS2812, 5, GRB>(leds[2], strip_lengths[2]);
-			FastLED.addLeds<WS2812, 6, GRB>(leds[3], strip_lengths[3]);
-			FastLED.addLeds<WS2812, 7, GRB>(leds[4], strip_lengths[4]);
-			FastLED.addLeds<WS2812, 8, GRB>(leds[5], strip_lengths[5]);
+			FastLED.addLeds<WS2812, 3, GRB>(leds, num_leds);
 		/*case 21: // Lower row, first panel
 		case 22: // Lower row, second panel
 		case 23: // Lower row, third panel
@@ -92,17 +101,32 @@ LEDPanel::LEDPanel(short row, short number)
 	}
 }
 
-// Return a reference to the cell in the main leds 2D array indicated by x and y
-// This will adjust for the fact that different strips start at different indices and are different lengths
+// Return a reference to the cell in the main led array indicated by x and y
+// This will need to adjust for the fact that the strips start at different indices, are different lengths
+// and are wired as a zig-zag
 // If the desired LED is outside the usable bounds, return NULL.  Make sure to always check for nullness
 CRGB* LEDPanel::GetLED(short x, short y)
 {
+	short column_max = strip_lengths[x] + strip_start_addresses[x];
+	short column_start = 0;
 	short true_y = y - strip_start_addresses[x];
+
+	bool is_even = x % 2; // The first column is coordinate 0, and is thus even. Figure that.
 	
-	if(true_y < 0 || true_y >= strip_lengths[x])
+	if(y < strip_start_addresses[x] || y > column_max)
 		return NULL;
 	
-	return &leds[x][true_y];
+	for(int i = 0; i < x; i++)
+		column_start += strip_lengths[i];
+	
+	short led_index = 0;
+	if(is_even)
+		led_index = ((column_start + strip_lengths[x]) - strip_start_addresses[x]) - y;
+	else
+		led_index = column_start + y;
+
+	
+	return &leds[led_index];
 }
 
 // Does what it says on the tin, really.
