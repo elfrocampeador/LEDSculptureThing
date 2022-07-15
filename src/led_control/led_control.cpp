@@ -113,7 +113,7 @@ CRGB* LEDPanel::GetLED(short x, short y)
 
 	bool is_even = x % 2; // The first column is coordinate 0, and is thus even. Figure that.
 	
-	if(y < strip_start_addresses[x] || y > column_max)
+	if(y < strip_start_addresses[x] || y >= column_max)
 		return NULL;
 	
 	for(int i = 0; i < x; i++)
@@ -121,9 +121,9 @@ CRGB* LEDPanel::GetLED(short x, short y)
 	
 	short led_index = 0;
 	if(is_even)
-		led_index = ((column_start + strip_lengths[x]) - strip_start_addresses[x]) - y - 1;
+		led_index = (column_start + strip_lengths[x] - 1) - (y - strip_start_addresses[x]);
 	else
-		led_index = column_start + y;
+		led_index = column_start + (y - strip_start_addresses[x]);
 
 	
 	return &leds[led_index];
