@@ -121,7 +121,7 @@ CRGB* LEDPanel::GetLED(short x, short y)
 	
 	short led_index = 0;
 	if(is_even)
-		led_index = ((column_start + strip_lengths[x]) - strip_start_addresses[x]) - y;
+		led_index = ((column_start + strip_lengths[x]) - strip_start_addresses[x]) - y - 1;
 	else
 		led_index = column_start + y;
 
