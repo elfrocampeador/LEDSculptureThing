@@ -70,30 +70,56 @@ LEDPanel::LEDPanel(short row, short number)
 			
 			// There needs to be a line here for each strip in the panel
 			FastLED.addLeds<WS2812, 3, GRB>(leds, num_leds);
-		/*case 21: // Lower row, first panel
+		case 21: // Lower row, first panel
 		case 22: // Lower row, second panel
 		case 23: // Lower row, third panel
 		case 24: // Lower row, fourth panel
 		case 25: // Lower row, fifth panel
-			num_strips = 6; // set panel strip count to 6
-			short (*tmp_strip_lengths)[] = {FILL THIS IN};
-			strip_lengths = tmp_strip_lengths; // This is probably bad, I haven't had to do something this weird in years
+			num_strips = 9; // set panel strip count to 9
+			strip_lengths = (short*)malloc(sizeof(short) * num_strips);
+			strip_lengths[0] = 16;
+			strip_lengths[1] = 22;
+			strip_lengths[2] = 27;
+			strip_lengths[3] = 29;
+			strip_lengths[4] = 29;
+			strip_lengths[5] = 29;
+			strip_lengths[6] = 27;
+			strip_lengths[7] = 22;
+			strip_lengths[8] = 16;
+				
+			longest_strip_length = 29;
 			
-			longest_strip_length = FILL THIS IN;
+			// Each column (sub strip) may be of a different length (as described in strip_lengths)
+			// And, thus, to establish a coherent grid, we need to know where each strip starts relative to the others.
+			// Specifically, this is how far each strip starts *from the bottom*
+			// Offset of 0 is for the longest column(s) as those take up the entire vertical height of the coordinate grid
+			strip_start_addresses = (short*)malloc(sizeof(short) * num_strips); 
+			strip_start_addresses[0] = 6;
+			strip_start_addresses[1] = 2;
+			strip_start_addresses[2] = 0;
+			strip_start_addresses[3] = 0;
+			strip_start_addresses[4] = 0;
+			strip_start_addresses[5] = 0;
+			strip_start_addresses[6] = 0;
+			strip_start_addresses[7] = 2;
+			strip_start_addresses[8] = 6;
 			
-			short (*tmp_strip_start_addresses)[] = {FILL THIS IN};
-			strip_start_addresses = tmp_strip_start_addresses;
+			int num_leds = 0;
+			int i;
+			for(i = 0; i < num_strips; i++)
+			{
+				num_leds += strip_lengths[i];
+			}			
+
+			leds = (CRGB*)malloc(sizeof(CRGB*) * num_leds);
 			
-			CRGB (*tmp_leds)[num_strips][longest_strip_length];
-			leds = tmp_leds;
+			for(i = 0; i < num_leds; i++)
+			{
+				leds[i] = CRGB(0, 0, 0);
+			}
 			
 			// There needs to be a line here for each strip in the panel
-			FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[0], strip_lengths[0]);
-			FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[1], strip_lengths[1]);
-			FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[2], strip_lengths[2]);
-			FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[3], strip_lengths[3]);
-			FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[4], strip_lengths[4]);
-			FastLED.addLeds<WS2812, FILL THIS IN, GRB>(leds[5], strip_lengths[5]);*/
+			FastLED.addLeds<WS2812, 3, GRB>(leds, num_leds);
 	}
 	for(int k = 0; k < 50; k++)
 	{
