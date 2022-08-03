@@ -24,6 +24,8 @@ LEDPanel::LEDPanel(short row, short number)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	int num_leds;
+	int i;
 	switch(panel_number)
 	{
 		case 11: // Upper row, first panel
@@ -54,8 +56,7 @@ LEDPanel::LEDPanel(short row, short number)
 			strip_start_addresses[4] = 3;
 			strip_start_addresses[5] = 6;
 			
-			int num_leds = 0;
-			int i;
+			num_leds = 0;
 			for(i = 0; i < num_strips; i++)
 			{
 				num_leds += strip_lengths[i];
@@ -70,6 +71,8 @@ LEDPanel::LEDPanel(short row, short number)
 			
 			// There needs to be a line here for each strip in the panel
 			FastLED.addLeds<WS2812, 3, GRB>(leds, num_leds);
+			
+			break;
 		case 21: // Lower row, first panel
 		case 22: // Lower row, second panel
 		case 23: // Lower row, third panel
@@ -104,8 +107,7 @@ LEDPanel::LEDPanel(short row, short number)
 			strip_start_addresses[7] = 2;
 			strip_start_addresses[8] = 6;
 			
-			int num_leds = 0;
-			int i;
+			num_leds = 0;
 			for(i = 0; i < num_strips; i++)
 			{
 				num_leds += strip_lengths[i];
@@ -120,6 +122,8 @@ LEDPanel::LEDPanel(short row, short number)
 			
 			// There needs to be a line here for each strip in the panel
 			FastLED.addLeds<WS2812, 3, GRB>(leds, num_leds);
+			
+			break;
 	}
 	for(int k = 0; k < 50; k++)
 	{
@@ -327,4 +331,32 @@ bool LEDPanel::WipeVertical(short target_r, short target_g, short target_b, bool
 	//Serial.println((String)" " + y_step + "   " + status_buffer[buffer0] + "   " + y);
 
 	return done;
+}
+
+void LEDPanel::PrintGridToSerial()
+{
+	/*
+	Scan through leds (using grid coords), and print line by line over serial
+	Each led is to be represented by RRR|GGG|BBB where RRR GGG and BBB are all 0-255 values
+	*/
+	
+	int x, y;
+	Serial.println("PANELDUMP");
+	for(y = 0; y < longest_strip_length; y++)
+	{
+		String line;
+		for(x = 0; x < num_strips; x++)
+		{
+			CRGB *current_led = GetLED(x, y);
+			if(x > 0)
+				line += " ";
+			
+			if(current_led != NULL)
+				line += (String)current_led->r + "|" + (String)current_led->g + "|" + (String)current_led->b;
+			else
+				line += "000|000|000";
+		}
+		Serial.println(line);
+	}
+	Serial.println("PANELDUMPCOMPLETE");
 }

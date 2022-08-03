@@ -21,6 +21,8 @@ class LEDPanel
 		// The following use three indices of buffer space
 		bool FadeToColor(short target_r, short target_g, short target_b, double duration, short buffer0);
 		
+		void PrintGridToSerial();
+		
 		short status_buffer[50]; // This is bad, but a way to store context between frames.  Come up with something better.
 	private:
 		short num_strips;

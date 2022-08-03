@@ -19,14 +19,15 @@ void setup()
 void loop() 
 { 
 	// First slide the led in one direction
+	Serial.println("Update Phase");
 
 	bool done;
-/*	if(target == 1)
+	if(target == 1)
 		done = test_panel.FadeToColor(255, 0, 0, 4.0, 0);
 	else if(target == 2)
 		done = test_panel.FadeToColor(0, 0, 255, 4.0, 0);
 	else if(target == 3)
-		done = test_panel.FadeToColor(0, 255, 0, 4.0, 0); */
+		done = test_panel.FadeToColor(0, 255, 0, 4.0, 0);
 	
 	if(target == 1)
 	{
@@ -76,7 +77,7 @@ void loop()
 			target = 1;
 	}
 
-	Serial.println("show");
+	Serial.println("Rendering");
 	FastLED.show();
 	delay(1000/30);
 }
