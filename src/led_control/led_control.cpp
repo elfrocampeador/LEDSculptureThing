@@ -333,6 +333,76 @@ bool LEDPanel::WipeVertical(short target_r, short target_g, short target_b, bool
 	return done;
 }
 
+bool LEDPanel::WipeHorizontal(short target_r, short target_g, short target_b, bool go_right, double duration, short buffer0)
+{
+	short x, y, x_step, frame_offset;
+	bool done = true; // if ANY led is encountered that isn't at the target rgb, this will be set to false
+	
+	x_step = ceil((double)num_strips / (9.0 * duration));
+	if(status_buffer[buffer0] == -1) // If we just got started
+	{
+		status_buffer[buffer0] = 0;
+	}
+	
+	// Initialize
+	if(go_right)
+	{
+		x = num_strips - status_buffer[buffer0];
+	}
+	else
+	{
+		x = status_buffer[buffer0];
+	}
+	frame_offset = 0;
+	
+	
+	for(y = 0; y < longest_strip_length; y++)
+	{
+		for(frame_offset = 0; frame_offset < x_step; frame_offset++)
+		{
+			CRGB *current_led = GetLED(x, y);
+			(*current_led) = CRGB(target_r, target_g, target_b);
+		}
+	
+		status_buffer[buffer0] += 1;
+		if(go_right)
+		{
+			x = status_buffer[buffer0];
+		}
+		else
+		{
+			x = num_strips - status_buffer[buffer0];
+		}
+	}
+	
+	// If we're not done yet
+	if((go_right && x >= 0) || (!go_right  && x < num_strips))
+	{
+		done = false;
+	}
+	else // If we are, in fact, done
+	{
+		// Reset the buffer
+		status_buffer[buffer0] = -1;
+	}
+	
+	//Serial.println((String)" " + y_step + "   " + status_buffer[buffer0] + "   " + y);
+
+	return done;
+}
+
+/*bool LEDPanel::LightInSequence()
+{
+	short x, y, frame_offset;
+	
+	int frame_number = status_buffer[buffer0];
+	
+	x = frame_number / longest_strip_length;
+	y = frame_number % longest_strip_length;
+	
+	
+}*/
+
 void LEDPanel::PrintGridToSerial()
 {
 	/*

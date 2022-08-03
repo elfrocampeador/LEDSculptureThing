@@ -2,7 +2,7 @@
 #include "src/led_control/led_control.h"
 
 // Define the array of leds
-LEDPanel test_panel = LEDPanel(1, 5);
+LEDPanel test_panel = LEDPanel(2, 5);
 int target = 1;
 
 void setup() 
@@ -32,7 +32,7 @@ void loop()
 	if(target == 1)
 	{
 		CRGB color = CRGB::Red;
-		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 8.0, 0);
+		done = test_panel.WipeHorizontal(color.red, color.green, color.blue, 1, 8.0, 5);
 		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
 	}
 	else if(target == 2)
