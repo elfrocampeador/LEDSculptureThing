@@ -335,50 +335,43 @@ bool LEDPanel::WipeVertical(short target_r, short target_g, short target_b, bool
 
 bool LEDPanel::WipeHorizontal(short target_r, short target_g, short target_b, bool go_right, double duration, short buffer0)
 {
-	short x, y, x_step, frame_offset;
+	short x, y, frame_number, x_limit, x_offset;
+	double x_step;
 	bool done = true; // if ANY led is encountered that isn't at the target rgb, this will be set to false
 	
-	x_step = ceil((double)num_strips / (9.0 * duration));
+	// For this function, status buffer contains our frame number.
+	
+	x_step = (double)num_strips / (30.0 * duration);
 	if(status_buffer[buffer0] == -1) // If we just got started
 	{
 		status_buffer[buffer0] = 0;
 	}
 	
-	// Initialize
-	if(go_right)
-	{
-		x = num_strips - status_buffer[buffer0];
-	}
-	else
-	{
-		x = status_buffer[buffer0];
-	}
-	frame_offset = 0;
+	frame_number = status_buffer[buffer0];
 	
+	x_limit = ceil((double)frame_number * x_step);
 	
-	for(y = 0; y < longest_strip_length; y++)
+	for(x_offset = 0; x_offset <= x_limit; x_offset++)
 	{
-		for(frame_offset = 0; frame_offset < x_step; frame_offset++)
+		if(go_right)
+			x = x_offset;
+		else
+			x = num_strips - x_offset;
+		
+		for(y = 0; y < longest_strip_length; y++)
 		{
 			CRGB *current_led = GetLED(x, y);
 			(*current_led) = CRGB(target_r, target_g, target_b);
-		}
-	
-		status_buffer[buffer0] += 1;
-		if(go_right)
-		{
-			x = status_buffer[buffer0];
-		}
-		else
-		{
-			x = num_strips - status_buffer[buffer0];
+			//Serial.println((String)"X: " + x + "   Y:" + y + "   STEP: " + x_step + "   LIMIT: " + x_limit + "  FRAME: " + frame_number);
 		}
 	}
 	
 	// If we're not done yet
-	if((go_right && x >= 0) || (!go_right  && x < num_strips))
+	if((go_right && x <= num_strips) || (!go_right && x >= 0))
 	{
 		done = false;
+		status_buffer[buffer0] = frame_number + 1;
+
 	}
 	else // If we are, in fact, done
 	{
@@ -386,7 +379,7 @@ bool LEDPanel::WipeHorizontal(short target_r, short target_g, short target_b, bo
 		status_buffer[buffer0] = -1;
 	}
 	
-	//Serial.println((String)" " + y_step + "   " + status_buffer[buffer0] + "   " + y);
+	//Serial.println((String)" DONE: " + done);
 
 	return done;
 }

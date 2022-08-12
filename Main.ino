@@ -22,42 +22,36 @@ void loop()
 	Serial.println("Update Phase");
 
 	bool done;
-	if(target == 1)
-		done = test_panel.FadeToColor(255, 0, 0, 4.0, 0);
-	else if(target == 2)
-		done = test_panel.FadeToColor(0, 0, 255, 4.0, 0);
-	else if(target == 3)
-		done = test_panel.FadeToColor(0, 255, 0, 4.0, 0);
 	
 	if(target == 1)
 	{
-		CRGB color = CRGB::Red;
-		done = test_panel.WipeHorizontal(color.red, color.green, color.blue, 1, 8.0, 5);
-		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
+		CRGB color = CRGB::Blue;
+		done = test_panel.WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
 	}
 	else if(target == 2)
 	{
 		CRGB color = CRGB::OrangeRed;
-		done = test_panel.WipeVertical(color.red, color.green, color.blue, 0, 8.0, 0);		//test_panel.StaticVerticalGradient(255, 0, 0, 0, 0, 255);
+		done = test_panel.WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
 	}
 	else if(target == 3)
 	{
 		CRGB color = CRGB::Yellow;
-		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 8.0, 0);
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 1.0, 0);
 	}
 	else if(target == 4)
 	{
 		CRGB color = CRGB::Green;
-		done = test_panel.WipeVertical(color.red, color.green, color.blue, 0, 8.0, 0);	}
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 0, 1.0, 0);
+	}
 	else if(target == 5)
 	{
 		CRGB color = CRGB::Blue;
-		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 8.0, 0);
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 1.0, 0);
 	}
 	else
 	{
 		CRGB color = CRGB::Purple;
-		done = test_panel.WipeVertical(color.red, color.green, color.blue, 0, 8.0, 0);
+		done = test_panel.WipeVertical(color.red, color.green, color.blue, 0, 1.0, 0);
 	}
 	
 	if(done)
@@ -77,7 +71,6 @@ void loop()
 			target = 1;
 	}
 
-	Serial.println("Rendering");
 	FastLED.show();
 	delay(1000/30);
 }
