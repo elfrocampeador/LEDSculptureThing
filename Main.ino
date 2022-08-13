@@ -36,7 +36,7 @@ void loop()
 	else if(target == 3)
 	{
 		CRGB color = CRGB::Yellow;
-		done = test_panel.WipeVertical(color.red, color.green, color.blue, 1, 1.0, 0);
+		done = test_panel.Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
 	}
 	else if(target == 4)
 	{

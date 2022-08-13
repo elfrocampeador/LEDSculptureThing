@@ -384,17 +384,81 @@ bool LEDPanel::WipeHorizontal(short target_r, short target_g, short target_b, bo
 	return done;
 }
 
-/*bool LEDPanel::LightInSequence()
+bool LEDPanel::Explosion(short target_r, short target_g, short target_b, bool go_out, double duration, short buffer0)
 {
-	short x, y, frame_offset;
+	short x, y, inverse_x, inverse_y, frame_number, x_offset, y_offset, x_limit, y_limit;
+	double x_step, y_step;
+	bool done = true; // if ANY led is encountered that isn't at the target rgb, this will be set to false
 	
-	int frame_number = status_buffer[buffer0];
+	// For this function, status buffer contains our frame number.
 	
-	x = frame_number / longest_strip_length;
-	y = frame_number % longest_strip_length;
+	x_step = (double)num_strips / (30.0 * duration * 2.0);
+	y_step = (double)longest_strip_length / (30.0 * duration * 2.0);
+	if(status_buffer[buffer0] == -1) // If we just got started
+	{
+		status_buffer[buffer0] = 0;
+	}
 	
+	frame_number = status_buffer[buffer0];
 	
-}*/
+	x_limit = ceil((double)frame_number * x_step);
+	y_limit = ceil((double)frame_number * y_step);
+	
+	for(x_offset = 0; x_offset <= x_limit; x_offset++)
+	{
+		if(go_out)
+		{
+			x = (num_strips / 2) + x_offset;
+			inverse_x = (num_strips / 2) - x_offset;
+		}
+		else
+		{
+			x = num_strips - x_offset;
+			inverse_x = x_offset;
+		}
+		
+		for(y_offset = 0; y_offset <= y_limit; y_offset++)
+		{
+			if(go_out)
+			{
+				y = (longest_strip_length / 2) + y_offset;
+				inverse_y = (longest_strip_length / 2) - y_offset;
+			}
+			else
+			{
+				y = longest_strip_length - y_offset;
+				inverse_y = y_offset;
+			}
+
+			CRGB *current_led = GetLED(x, y);
+			(*current_led) = CRGB(target_r, target_g, target_b);
+			current_led = GetLED(inverse_x, y);
+			(*current_led) = CRGB(target_r, target_g, target_b);
+			current_led = GetLED(x, inverse_y);
+			(*current_led) = CRGB(target_r, target_g, target_b);
+			current_led = GetLED(inverse_x, inverse_y);
+			(*current_led) = CRGB(target_r, target_g, target_b);
+			//Serial.println((String)"X: " + x + "   Y:" + y + "   STEP: " + x_step + "   LIMIT: " + x_limit + "  FRAME: " + frame_number);
+		}
+	}
+	
+	// If we're not done yet
+	if(y_offset <= (longest_strip_length / 2))
+	{
+		done = false;
+		status_buffer[buffer0] = frame_number + 1;
+
+	}
+	else // If we are, in fact, done
+	{
+		// Reset the buffer
+		status_buffer[buffer0] = -1;
+	}
+	
+	//Serial.println((String)" DONE: " + done);
+
+	return done;
+}
 
 void LEDPanel::PrintGridToSerial()
 {
