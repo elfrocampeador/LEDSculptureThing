@@ -33,28 +33,34 @@ LEDPanel::LEDPanel(short row, short number)
 		case 13: // Upper row, third panel
 		case 14: // Upper row, fourth panel
 		case 15: // Upper row, fifth panel
-			num_strips = 6; // set panel strip count to 6
+			num_strips = 9; // set panel strip count to 9
 			strip_lengths = (short*)malloc(sizeof(short) * num_strips);
 			strip_lengths[0] = 20;
-			strip_lengths[1] = 37;
-			strip_lengths[2] = 55;
-			strip_lengths[3] = 55;
-			strip_lengths[4] = 37;
-			strip_lengths[5] = 20;
+			strip_lengths[1] = 23;
+			strip_lengths[2] = 42;
+			strip_lengths[3] = 46;
+			strip_lengths[4] = 62;
+			strip_lengths[5] = 46;
+			strip_lengths[6] = 42;
+			strip_lengths[7] = 23;
+			strip_lengths[8] = 20;
 				
-			longest_strip_length = 55;
+			longest_strip_length = 62;
 			
 			// Each column (sub strip) may be of a different length (as described in strip_lengths)
 			// And, thus, to establish a coherent grid, we need to know where each strip starts relative to the others.
 			// Specifically, this is how far each strip starts *from the bottom*
 			// Offset of 0 is for the longest column(s) as those take up the entire vertical height of the coordinate grid
 			strip_start_addresses = (short*)malloc(sizeof(short) * num_strips); 
-			strip_start_addresses[0] = 6;
-			strip_start_addresses[1] = 3;
-			strip_start_addresses[2] = 0;
-			strip_start_addresses[3] = 0;
-			strip_start_addresses[4] = 3;
-			strip_start_addresses[5] = 6;
+			strip_start_addresses[0] = 8;
+			strip_start_addresses[1] = 6;
+			strip_start_addresses[2] = 4;
+			strip_start_addresses[3] = 2;
+			strip_start_addresses[4] = 0;
+			strip_start_addresses[5] = 2;
+			strip_start_addresses[6] = 4;
+			strip_start_addresses[7] = 6;
+			strip_start_addresses[8] = 8;
 			
 			num_leds = 0;
 			for(i = 0; i < num_strips; i++)
@@ -70,7 +76,7 @@ LEDPanel::LEDPanel(short row, short number)
 			}
 			
 			// There needs to be a line here for each strip in the panel
-			FastLED.addLeds<WS2812, 3, GRB>(leds, num_leds);
+			FastLED.addLeds<WS2812, 2, GRB>(leds, num_leds);
 			
 			break;
 		case 21: // Lower row, first panel
@@ -121,7 +127,7 @@ LEDPanel::LEDPanel(short row, short number)
 			}
 			
 			// There needs to be a line here for each strip in the panel
-			FastLED.addLeds<WS2812, 3, GRB>(leds, num_leds);
+			FastLED.addLeds<WS2812, 36, GRB>(leds, num_leds);
 			
 			break;
 	}
@@ -458,6 +464,11 @@ bool LEDPanel::Explosion(short target_r, short target_g, short target_b, bool go
 	//Serial.println((String)" DONE: " + done);
 
 	return done;
+}
+
+bool LEDPanel::Spiral(short target_r, short target_g, short target_b, double duration, short buffer0)
+{
+	
 }
 
 void LEDPanel::PrintGridToSerial()

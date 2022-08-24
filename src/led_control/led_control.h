@@ -19,6 +19,7 @@ class LEDPanel
 		bool WipeVertical(short target_r, short target_g, short target_b, bool go_up, double duration, short buffer0);
 		bool WipeHorizontal(short target_r, short target_g, short target_b, bool go_right, double duration, short buffer0);
 		bool Explosion(short target_r, short target_g, short target_b, bool go_out, double duration, short buffer0);
+		bool Spiral(short target_r, short target_g, short target_b, double duration, short buffer0);
 		// The following use three indices of buffer space
 		bool FadeToColor(short target_r, short target_g, short target_b, double duration, short buffer0);
 		

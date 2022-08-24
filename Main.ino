@@ -3,7 +3,9 @@
 
 // Define the array of leds
 LEDPanel test_panel = LEDPanel(2, 5);
+LEDPanel upper_test_panel = LEDPanel(1, 5);
 int target = 1;
+int upper_target = 1;
 
 void setup() 
 {
@@ -22,6 +24,7 @@ void loop()
 	Serial.println("Update Phase");
 
 	bool done;
+	bool upper_done;
 	
 	if(target == 1)
 	{
@@ -69,6 +72,54 @@ void loop()
 			target = 6;
 		else if(target == 6)
 			target = 1;
+	}
+	
+	if(upper_target == 1)
+	{
+		CRGB color = CRGB::Blue;
+		upper_done = upper_test_panel.WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
+	}
+	else if(upper_target == 2)
+	{
+		CRGB color = CRGB::OrangeRed;
+		upper_done = upper_test_panel.WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
+	}
+	else if(upper_target == 3)
+	{
+		CRGB color = CRGB::Yellow;
+		upper_done = upper_test_panel.Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
+	}
+	else if(upper_target == 4)
+	{
+		CRGB color = CRGB::Green;
+		upper_done = upper_test_panel.WipeVertical(color.red, color.green, color.blue, 0, 1.0, 0);
+	}
+	else if(upper_target == 5)
+	{
+		CRGB color = CRGB::Blue;
+		upper_done = upper_test_panel.WipeVertical(color.red, color.green, color.blue, 1, 1.0, 0);
+	}
+	else
+	{
+		CRGB color = CRGB::Purple;
+		upper_done = upper_test_panel.WipeVertical(color.red, color.green, color.blue, 0, 1.0, 0);
+	}
+	
+	if(upper_done)
+	{
+		// This initialization logic should be moved into the function, somehow.
+		if(upper_target == 1)
+			upper_target = 2;
+		else if(upper_target == 2)
+			upper_target = 3;
+		else if(upper_target == 3)
+			upper_target = 4;
+		else if(upper_target == 4)
+			upper_target = 5;
+		else if(upper_target == 5)
+			upper_target = 6;
+		else if(upper_target == 6)
+			upper_target = 1;
 	}
 
 	FastLED.show();
