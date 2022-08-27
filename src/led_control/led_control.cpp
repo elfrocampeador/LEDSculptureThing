@@ -1,5 +1,6 @@
 #include "led_control.h"
-
+ #include <iostream> 
+ #include <chrono>   
 // Each panel is intended to be wired as a zig-zagging snake of strips oriented up and down
 // With the data pin being fed from the bottom left of the panel, and then from the top of 
 // Each odd numbered column to the top of the next even numbered column, and the bottom of
@@ -24,6 +25,7 @@ LEDPanel::LEDPanel(short row, short number)
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+
 	int num_leds;
 	int i;
 	switch(panel_number)
@@ -97,6 +99,7 @@ LEDPanel::LEDPanel(short row, short number)
 			// Specifically, this is how far each strip starts *from the bottom*
 			// Offset of 0 is for the longest column(s) as those take up the entire vertical height of the coordinate grid
 			strip_start_addresses = (short*)malloc(sizeof(short) * num_strips); 
+			 using namespace std::chrono;
 			strip_start_addresses[0] = 6;
 			strip_start_addresses[1] = 2;
 			strip_start_addresses[2] = 0;
@@ -106,7 +109,8 @@ LEDPanel::LEDPanel(short row, short number)
 			strip_start_addresses[6] = 0;
 			strip_start_addresses[7] = 2;
 			strip_start_addresses[8] = 6;
-			
+		uint64_t sec = duration_cast<seconds>(system_clock::now().time_since_epoch()).count();
+    std::cout << sec << " seconds since the Epoch\n";
 			num_leds = 0;
 			for(i = 0; i < num_strips; i++)
 			{
