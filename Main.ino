@@ -29,12 +29,12 @@ void loop()
 	if(target == 1)
 	{
 		CRGB color = CRGB::Blue;
-		done = test_panel.WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
+		done = test_panel.WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
 	}
 	else if(target == 2)
 	{
 		CRGB color = CRGB::OrangeRed;
-		done = test_panel.WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
+		done = test_panel.WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
 	}
 	else if(target == 3)
 	{
@@ -77,12 +77,12 @@ void loop()
 	if(upper_target == 1)
 	{
 		CRGB color = CRGB::Blue;
-		upper_done = upper_test_panel.WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
+		upper_done = upper_test_panel.WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
 	}
 	else if(upper_target == 2)
 	{
 		CRGB color = CRGB::OrangeRed;
-		upper_done = upper_test_panel.WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
+		upper_done = upper_test_panel.WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
 	}
 	else if(upper_target == 3)
 	{
