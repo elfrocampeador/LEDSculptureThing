@@ -165,6 +165,13 @@ CRGB* LEDPanel::GetLED(short x, short y)
 	return &leds[led_index];
 }
 
+void LEDPanel::ResetStatus()
+{
+	int i;
+	for(i = 0; i < 5; i++)
+		status_buffer[i] = -1;
+}
+
 // Does what it says on the tin, really.
 void LEDPanel::SetColor(short target_r, short target_g, short target_b)
 {
@@ -464,11 +471,6 @@ bool LEDPanel::Explosion(short target_r, short target_g, short target_b, bool go
 	//Serial.println((String)" DONE: " + done);
 
 	return done;
-}
-
-bool LEDPanel::Spiral(short target_r, short target_g, short target_b, double duration, short buffer0)
-{
-	
 }
 
 void LEDPanel::PrintGridToSerial()

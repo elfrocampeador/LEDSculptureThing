@@ -10,6 +10,7 @@ class LEDPanel
 	public:
 		LEDPanel(short row, short number);
 		CRGB* GetLED(short x, short y); // Convert from x, y to an index in the led strip array
+		void ResetStatus();
 		void SetColor(short target_r, short target_g, short target_b);
 		
 		// The following uses no buffer space
@@ -19,13 +20,10 @@ class LEDPanel
 		bool WipeVertical(short target_r, short target_g, short target_b, bool go_up, double duration, short buffer0);
 		bool WipeHorizontal(short target_r, short target_g, short target_b, bool go_right, double duration, short buffer0);
 		bool Explosion(short target_r, short target_g, short target_b, bool go_out, double duration, short buffer0);
-		bool Spiral(short target_r, short target_g, short target_b, double duration, short buffer0);
 		// The following use three indices of buffer space
 		bool FadeToColor(short target_r, short target_g, short target_b, double duration, short buffer0);
 		
-		void PrintGridToSerial();
-		
-		short status_buffer[50]; // This is bad, but a way to store context between frames.  Come up with something better.
+		short status_buffer[5]; // This is bad, but a way to store context between frames.  Come up with something better.
 	private:
 		short num_strips;
 		short *strip_lengths; // This will be an array num_strips long, with the number of LEDs in each strip in the panel
