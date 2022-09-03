@@ -1,24 +1,36 @@
 #include "panel_manager.h"
-#include "src/led_control/led_control.h"
+#include "led_control.h"
 
-PanelManager::PanelManager(short rows, short columns)
+PanelManager::PanelManager()
 {
 	num_rows = rows;
 	num_columns = columns;
 	num_panels = rows * columns;
 	
-	panels = new LEDPanel[num_rows][num_columns];
+	Serial.begin(57600);
+	Serial.println((String)" TEST");
+	//Serial.println((String)" PANEL " + sizeof(LEDPanel*) + "  R " + num_rows + "  C " + num_columns);
+	
+	return;
 	current_step = 0;
 	
-	int x, y;
+	short x, y;
+	
 	// Initialize all panels.
-	for(x = 0; x < num_rows; x++)
+	for(y = 0; y < num_columns; y++)
 	{
-		for(y = 0; y < num_columns; y++)
+		for(x = 0; x < num_rows; x++)
 		{
-			panels[x][y] = LEDPanel(y + 1, x + 1);
+			Serial.println((String)" X " + x + "  Y " + y);
+			panels[(num_columns * y) + x] = LEDPanel(y + 1, x + 1);
 		}
 	}
+}
+
+LEDPanel* PanelManager::GetPanel(short x, short y)
+{
+	short panel_index = (num_columns * (y-1)) + (x-1);
+	return &panels[panel_index];
 }
 
 // Turn a string with multiple tokens into an array of strings.  ONLY COMPATIBLE WITH STRINGS WITH 7 TOKENS.
@@ -26,14 +38,16 @@ String* PanelManager::Tokenize(String in, char delimiter)
 {
 	String tokens[7];
 	char *token;
-	int num = 1;
+	const char* inner_delimiter = (const char*)delimiter;
 	
-	token = strtok(in, delimiter);
+	int i = 0;
+	
+	token = strtok((char*)in.c_str(), inner_delimiter);
 	tokens[0] = token;
 	
 	while(token != NULL)
 	{
-		token = strtok(NULL, delimiter)
+		token = strtok(NULL, inner_delimiter);
 		tokens[i] = token;
 		i += 1;
 	}
@@ -43,51 +57,62 @@ String* PanelManager::Tokenize(String in, char delimiter)
 
 bool PanelManager::RunAnimation(short column, short row, String instruction)
 {
-	char *instruction_tokens = Tokenize(instruction);
-	bool done = False;
+	String *instruction_tokens = Tokenize(instruction, ' ');
+	bool done = false;
+	
+	Serial.println((String)" E " + instruction_tokens[0]);
 	
 	if(instruction_tokens[0] == "VWIPE")
 	{
-		short red = (short)instruction_tokens[1];
-		short green = (short)instruction_tokens[2];
-		short blue = (short)instruction_tokens[3];
-		bool up = (bool)instruction_tokens[4];
-		double duration = (double)instruction_tokens[5];
-		short buffer0 = (short)instruction_tokens[6];
+		short red = (short)instruction_tokens[1].toInt();
+		short green = (short)instruction_tokens[2].toInt();
+		short blue = (short)instruction_tokens[3].toInt();
+		bool up = (bool)instruction_tokens[4].toInt();
+		double duration = (double)instruction_tokens[5].toFloat();
+		short buffer0 = (short)instruction_tokens[6].toInt();
 		
-		done = panels[column][row].WipeVertical(red, green, blue, up, duration, buffer0);
+		LEDPanel* current_panel = GetPanel(column, row);
+		done = current_panel->WipeVertical(red, green, blue, up, duration, buffer0);
 	}
 	else if(instruction_tokens[0] == "HWIPE")
 	{
-		short red = (short)instruction_tokens[1];
-		short green = (short)instruction_tokens[2];
-		short blue = (short)instruction_tokens[3];
-		bool right = (bool)instruction_tokens[4];
-		double duration = (double)instruction_tokens[5];
-		short buffer0 = (short)instruction_tokens[6];
+		short red = (short)instruction_tokens[1].toInt();
+		short green = (short)instruction_tokens[2].toInt();
+		short blue = (short)instruction_tokens[3].toInt();
+		bool right = (bool)instruction_tokens[4].toInt();
+		double duration = (double)instruction_tokens[5].toFloat();
+		short buffer0 = (short)instruction_tokens[6].toInt();
 		
-		done = panels[column][row].WipeHorizontal(red, green, blue, right, duration, buffer0);
+		LEDPanel* current_panel = GetPanel(column, row);
+		done = current_panel->WipeHorizontal(red, green, blue, right, duration, buffer0);
 	}
 	else if(instruction_tokens[0] == "FADE")
 	{
-		short red = (short)instruction_tokens[1];
-		short green = (short)instruction_tokens[2];
-		short blue = (short)instruction_tokens[3];
-		double duration = (double)instruction_tokens[4];
-		short buffer0 = (short)instruction_tokens[5];
+		short red = (short)instruction_tokens[1].toInt();
+		short green = (short)instruction_tokens[2].toInt();
+		short blue = (short)instruction_tokens[3].toInt();
+		double duration = (double)instruction_tokens[4].toFloat();
+		short buffer0 = (short)instruction_tokens[5].toInt();
 		
-		done = panels[column][row].FadeToColor(red, green, blue, duration, buffer0);
+		LEDPanel* current_panel = GetPanel(column, row);
+		done = current_panel->FadeToColor(red, green, blue, duration, buffer0);
 	}
 	else if(instruction_tokens[0] == "BOOM")
 	{
-		short red = (short)instruction_tokens[1];
-		short green = (short)instruction_tokens[2];
-		short blue = (short)instruction_tokens[3];
-		bool out = (bool)instruction_tokens[4];
-		double duration = (double)instruction_tokens[5];
-		short buffer0 = (short)instruction_tokens[6];
+		short red = (short)instruction_tokens[1].toInt();
+		short green = (short)instruction_tokens[2].toInt();
+		short blue = (short)instruction_tokens[3].toInt();
+		bool out = (bool)instruction_tokens[4].toInt();
+		double duration = (double)instruction_tokens[5].toFloat();
+		short buffer0 = (short)instruction_tokens[6].toInt();
 		
-		done = panels[column][row].WipeVertical(red, green, blue, out, duration, buffer0);
+		LEDPanel* current_panel = GetPanel(column, row);
+		done = current_panel->WipeVertical(red, green, blue, out, duration, buffer0);
+	}
+	else if(instruction_tokens[0] == "NoOp")
+	{
+		// Do Nothing!
+		done = false;
 	}
 	
 	return done;
@@ -106,7 +131,7 @@ void PanelManager::CoordinateEffects()
 	
 	for(panel_index = 0; panel_index < num_panels; panel_index++)
 	{
-		panel_num = (short)effects[panel_index][0];
+		panel_num = (short)effects[panel_index][0].toInt();
 		if(panel_num > 20)
 		{
 			panel_row = 2;
@@ -131,7 +156,7 @@ void PanelManager::CoordinateEffects()
 			// Reset all status stuff for each panel, so we don't inadvertently start in the middle of a effect or something
 			for(panel_index = 0; panel_index < num_panels; panel_index++)
 			{
-				panel_num = (short)effects[panel_index][0];
+				panel_num = (short)effects[panel_index][0].toInt();
 				if(panel_num > 20)
 				{
 					panel_row = 2;
@@ -143,7 +168,8 @@ void PanelManager::CoordinateEffects()
 					panel_column - 10;
 				}
 				
-				panels[panel_column][panel_row].ResetStatus();
+				LEDPanel* current_panel = GetPanel(panel_column, panel_row);
+				current_panel->ResetStatus();
 			}
 		}
 	}
