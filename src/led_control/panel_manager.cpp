@@ -6,21 +6,16 @@ PanelManager::PanelManager()
 	num_columns = COLUMNS;
 	num_panels = ROWS * COLUMNS;
 	
-	Serial.begin(57600);
-	Serial.println((String)" TEST");
-	//Serial.println((String)" PANEL " + sizeof(LEDPanel*) + "  R " + num_rows + "  C " + num_columns);
-	
-	return;
 	current_step = 0;
 	
-	short x, y;
+	short x = 0, y = 0;
 	
 	// Initialize all panels.
-	for(y = 0; y < num_columns; y++)
+	for(y = 0; y < num_rows; y++)
 	{
-		for(x = 0; x < num_rows; x++)
+		for(x = 0; x < num_columns; x++)
 		{
-			Serial.println((String)" X " + x + "  Y " + y);
+			Serial.println((String)"X: " + (x+1) + "  Y: " + (y+1));
 			panels[(num_columns * y) + x] = new LEDPanel(y + 1, x + 1);
 		}
 	}
@@ -59,6 +54,7 @@ bool PanelManager::RunAnimation(short column, short row, String instruction)
 	String *instruction_tokens = Tokenize(instruction, ' ');
 	bool done = false;
 	
+	Serial.println((String)"  PANEL " + row + " " + column);
 	Serial.println((String)" E " + instruction_tokens[0]);
 	
 	if(instruction_tokens[0] == "VWIPE")

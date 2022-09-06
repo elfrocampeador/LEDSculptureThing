@@ -26,6 +26,8 @@ LEDPanel::LEDPanel(short row, short number)
 	
 	int num_leds;
 	int i;
+	
+	Serial.println((String)"  PANEL:" + panel_number);
 	switch(panel_number)
 	{
 		case 11: // Upper row, first panel

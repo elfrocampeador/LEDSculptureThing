@@ -1,16 +1,17 @@
 #include <FastLED.h>
 #include "src/led_control/panel_manager.h"
 
-PanelManager panel_man = PanelManager();
 int target = 1;
 int upper_target = 1;
+PanelManager *panel_man;
 
 void setup() 
 {
 	FastLED.setBrightness(255);
 	
-	//Serial.begin(57600);
+	Serial.begin(57600);
 	Serial.println("resetting");
+	panel_man = new PanelManager();
 }
 
 // What we're really going to want to do, I think, is have a master counter in the main loop, and have separate functions for each type of effect
@@ -21,7 +22,7 @@ void loop()
 	// First slide the led in one direction
 	Serial.println("Update Phase");
 	
-	//panel_man.CoordinateEffects();
+	panel_man->CoordinateEffects();
 
 	FastLED.show();
 	delay(1000/30);
