@@ -1,11 +1,10 @@
 #include "panel_manager.h"
-#include "led_control.h"
 
 PanelManager::PanelManager()
 {
-	num_rows = rows;
-	num_columns = columns;
-	num_panels = rows * columns;
+	num_rows = ROWS;
+	num_columns = COLUMNS;
+	num_panels = ROWS * COLUMNS;
 	
 	Serial.begin(57600);
 	Serial.println((String)" TEST");
@@ -22,7 +21,7 @@ PanelManager::PanelManager()
 		for(x = 0; x < num_rows; x++)
 		{
 			Serial.println((String)" X " + x + "  Y " + y);
-			panels[(num_columns * y) + x] = LEDPanel(y + 1, x + 1);
+			panels[(num_columns * y) + x] = new LEDPanel(y + 1, x + 1);
 		}
 	}
 }
@@ -30,7 +29,7 @@ PanelManager::PanelManager()
 LEDPanel* PanelManager::GetPanel(short x, short y)
 {
 	short panel_index = (num_columns * (y-1)) + (x-1);
-	return &panels[panel_index];
+	return panels[panel_index];
 }
 
 // Turn a string with multiple tokens into an array of strings.  ONLY COMPATIBLE WITH STRINGS WITH 7 TOKENS.

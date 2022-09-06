@@ -1,13 +1,12 @@
 #include <FastLED.h>
+#include "Arduino.h"
+#include "led_control.h"
 
 #ifndef panel_man_h
 #define panel_man_h
 
 #define ROWS 2
 #define COLUMNS 5
-
-#include "Arduino.h"
-#include "led_control.h"
 
 class PanelManager
 {
@@ -23,7 +22,7 @@ class PanelManager
 		short num_rows;
 		short num_columns;
 		
-		LEDPanel panels[ROWS * COLUMNS];
+		LEDPanel* panels[ROWS * COLUMNS];
 		short num_steps = 12;
 		short current_step = 1;
 		
