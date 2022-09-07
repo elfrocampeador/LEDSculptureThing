@@ -65,30 +65,30 @@ void loop()
 		case 1:
 			color = CRGB::Blue;
 			done = panels[0]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
-			panels[5]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
+			panels[5]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
 			break;
 		case 2:
 			color = CRGB::Blue;
 			done = panels[1]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
-			panels[6]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
+			panels[6]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
 			break;
 		case 3:
 			color = CRGB::Blue;
 			done = panels[2]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
-			panels[7]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
+			panels[7]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
 			break;
 		case 4:
 			color = CRGB::Blue;
 			done = panels[3]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
-			panels[8]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
+			panels[8]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
 			break;
 		case 5:
 			color = CRGB::Blue;
 			done = panels[4]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
-			panels[9]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 5);
+			panels[9]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
 			break;
 		case 6:
-			color = CRGB::Orange;
+			color = CRGB::Green;
 			done = panels[0]->Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
 			panels[1]->Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
 			panels[2]->Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
@@ -101,32 +101,32 @@ void loop()
 			panels[9]->Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
 			break;
 		case 7:
-			color = CRGB::Aquamarine;
+			color = CRGB::Red;
 			done = panels[4]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
-			panels[9]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
+			panels[9]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
 			break;
 		case 8:
-			color = CRGB::Aquamarine;
+			color = CRGB::Red;
 			done = panels[3]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
-			panels[8]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
+			panels[8]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
 			break;
 		case 9:
-			color = CRGB::Aquamarine;
+			color = CRGB::Red;
 			done = panels[2]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
-			panels[7]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
+			panels[7]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
 			break;
 		case 10:
-			color = CRGB::Aquamarine;
+			color = CRGB::Red;
 			done = panels[1]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
-			panels[6]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
+			panels[6]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
 			break;
 		case 11:
-			color = CRGB::Aquamarine;
+			color = CRGB::Red;
 			done = panels[0]->WipeHorizontal(color.red, color.green, color.blue, 0, 0.5, 0);
-			panels[5]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 5);
+			panels[5]->WipeHorizontal(color.red, color.green, color.blue, 1, 0.5, 0);
 			break;
 		case 12:
-			color = CRGB::Red;
+			color = CRGB::Green;
 			done = panels[0]->WipeVertical(color.red, color.green, color.blue, 0, 1.0, 0);
 			panels[1]->WipeVertical(color.red, color.green, color.blue, 0, 1.0, 0);
 			panels[2]->WipeVertical(color.red, color.green, color.blue, 0, 1.0, 0);
@@ -142,7 +142,7 @@ void loop()
 			panels[4]->WipeVertical(color.red, color.green, color.blue, 1, 1.0, 0);
 			break;
 		case 14:
-			color = CRGB::Gold;
+			color = CRGB::Brown;
 			done = panels[0]->Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
 			panels[1]->Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
 			panels[2]->Explosion(color.red, color.green, color.blue, 1, 1.0, 0);
