@@ -501,10 +501,12 @@ LEDPanel::LEDPanel(short row, short number)
 			
 			break;
 	}
-	for(int k = 0; k < 50; k++)
+	for(int k = 0; k < 5; k++)
 	{
+		Serial.println((String)"K " + k);
 		status_buffer[k] = -1;
 	}
+	Serial.println("DONE");
 }
 
 // Return a reference to the cell in the main led array indicated by x and y
